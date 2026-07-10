@@ -1,49 +1,313 @@
-# Advanced Multi-Client Chat Server (TCP & Mininet)
+# Advanced Multi-Client TCP Chat Server
 
-An enhanced multi-client TCP chat application using Python socket programming and multithreading. Developed and evaluated within a Mininet environment, this project implements advanced client state tracking, private routing, and network performance analysis.
+A feature-rich multi-client chat application developed using **Python Socket Programming** and **TCP**. This project extends a basic TCP chat server by adding advanced client management, private messaging, persistent chat history, performance monitoring, graph generation, and packet-level verification using Wireshark.
 
-## 🚀 Features
-- **Multithreaded Architecture:** Handles concurrent client connections seamlessly over port `5000`.
-- **Advanced State Management:** Tracks active usernames, IP addresses, ports, and connection status.
-- **Messaging Modes:** Supports global broadcast messaging as well as secure private messaging via `/msg <username> <message>`[cite: 1].
-- **Active Directory:** Real-time online user tracking using the `/list` command[cite: 1].
-- **Persistent History:** Automatically logs conversations to `chat_history.csv` and restores the last 5 messages upon reconnection[cite: 1].
-- **Performance Evaluation:** Tracks message delivery delay and network throughput, logging metrics to `performance_results.csv`[cite: 1].
+The application demonstrates concepts of **Computer Networks**, **TCP Socket Programming**, **Multithreading**, and **Client-Server Communication** through a centralized server architecture.
 
 ---
 
-## 🛠️ Network Topology (Mininet)
-Simulated using a single switch topology with 5 nodes[cite: 1]:
+## Features
+
+### Multi-Client Support
+- Supports multiple clients connecting simultaneously.
+- Each client is handled using a separate thread.
+- Centralized TCP server manages all active connections.
+
+### User Management
+- Username-based login.
+- Stores client information including:
+  - Username
+  - IP Address
+  - Port Number
+  - Login Time
+  - Online/Offline Status
+
+### Broadcast Messaging
+- Messages are delivered to all connected clients.
+- Sender does not receive their own broadcast.
+
+### Private Messaging
+- Send private messages using:
+
+```text
+/msg <username> <message>
+```
+
+Example:
+
+```text
+/msg Aman Hello!
+```
+
+Only the intended recipient receives the message.
+
+### Online User List
+
+Display all currently connected users using:
+
+```text
+/list
+```
+
+### Join & Leave Notifications
+
+The server automatically broadcasts notifications whenever:
+- A new user joins
+- A user disconnects
+
+### Persistent Chat History
+
+- Chat messages are stored in:
+
+```
+chat_history.csv
+```
+
+- When a client reconnects, the server displays the previous five messages.
+
+### Performance Monitoring
+
+The server records:
+
+- Average Message Delay
+- Throughput
+- Broadcast Messages
+- Private Messages
+
+Results are saved in:
+
+```
+performance_results.csv
+```
+
+### Automatic Graph Generation
+
+Performance graphs are generated automatically, including:
+
+- Clients vs Average Delay
+- Clients vs Throughput
+- Broadcast vs Private Messages
+
+### Wireshark Verification
+
+TCP packets were analyzed using Wireshark to verify:
+
+- TCP Three-Way Handshake
+- Broadcast Communication
+- Private Messaging
+- Client Disconnection
+- Four-Way Connection Termination
+
+---
+
+# Project Structure
+
+```
+├── server.py
+├── client.py
+├── chat_history.csv
+├── performance_results.csv
+├── generate_graphs.py
+├── graphs/
+├── screenshots/
+└── README.md
+```
+
+---
+
+# Working
+
+## Step 1
+
+Start the server.
+
+The server listens on TCP Port **5000** and waits for incoming client connections.
+
+---
+
+## Step 2
+
+Clients connect to the server.
+
+Each client provides a username after connecting.
+
+The server stores:
+
+- Username
+- IP Address
+- Port
+- Login Time
+- Connection Status
+
+---
+
+## Step 3
+
+Messaging
+
+Users can:
+
+- Send broadcast messages
+- Send private messages
+- View online users
+
+Every incoming message is classified by the server and routed accordingly.
+
+---
+
+## Step 4
+
+Chat History
+
+Every message is written to:
+
+```
+chat_history.csv
+```
+
+When users reconnect, the last five chat messages are displayed.
+
+---
+
+## Step 5
+
+Performance Evaluation
+
+During execution, the server records:
+
+- Message Delay
+- Throughput
+- Number of Broadcast Messages
+- Number of Private Messages
+
+These statistics are stored in:
+
+```
+performance_results.csv
+```
+
+---
+
+## Step 6
+
+Graph Generation
+
+Run:
+
+```bash
+python generate_graphs.py
+```
+
+The script generates graphs for:
+
+- Average Delay
+- Throughput
+- Broadcast vs Private Messages
+
+---
+
+# Commands
+
+| Command | Description |
+|----------|-------------|
+| `/list` | Show online users |
+| `/msg <username> <message>` | Send private message |
+
+---
+
+# Technologies Used
+
+- Python 3
+- Socket Programming
+- TCP Protocol
+- Multithreading
+- CSV
+- Matplotlib
+- Mininet
+- Wireshark
+
+---
+
+# Experimental Setup
+
+- 1 TCP Server
+- 4 Clients
+- Mininet Topology
+
 ```bash
 sudo mn --topo single,5
-h1: Central Chat Server[cite: 1]
+```
 
-h2 to h5: Active Clients (A, B, C, D)[cite: 1]
+Server Port:
 
-📁 Repository Structure
-Plaintext
-Assignment05/
-├── server.py               # Multithreaded TCP Server
-├── client.py               # Interactive Client Terminal
-├── generate_graphs.py      # Automated performance visualization script
-├── chat_history.csv        # Persistent chat history database
-├── performance_results.csv # Metrics log (Throughput & Delay)
-├── Graphs/                 # Automated performance plots
-└── Screenshots/            # Wireshark packet capture verifications
-💻 How to Run
-Start the Mininet Environment:
+```
+5000
+```
 
-Bash
-sudo mn --topo single,5
-Launch the Server (on host h1):
+---
 
-Bash
-python3 server.py
-Launch Clients (on hosts h2 through h5):
+# Performance Analysis
 
-Bash
-python3 client.py
-🔬 Performance & Verification
-Analysis: Experimental evaluation shows that as the client count scales up, concurrent traffic increases overall throughput alongside a gradual increase in average delivery delay[cite: 1].
+The application evaluates:
 
-Wireshark Verification: Network stability and packet routing were verified under the tcp.port == 5000 filter, confirming proper TCP handshakes (SYN/ACK), payload delivery flags (PSH), and clean connection teardowns[cite: 1].
+- Average Delivery Delay
+- Throughput
+- Broadcast Messages
+- Private Messages
+
+As the number of connected clients increases:
+
+- Average delay increases due to concurrent processing.
+- Throughput also increases as more messages are transmitted.
+
+---
+
+# Wireshark Verification
+
+Packet captures verify:
+
+- TCP Three-Way Handshake (SYN, SYN-ACK, ACK)
+- Broadcast Messaging
+- Private Messaging
+- FIN/ACK Connection Termination
+
+Display Filter:
+
+```text
+tcp.port == 5000
+```
+
+---
+
+# Future Improvements
+
+- TLS Encryption
+- User Authentication
+- GUI Interface
+- Group Chat
+- File Sharing
+- Emoji Support
+- Offline Messaging
+- Database Storage
+- Improved Scalability using Async I/O
+
+---
+
+# Learning Outcomes
+
+This project provides practical experience in:
+
+- TCP Socket Programming
+- Client-Server Architecture
+- Concurrent Programming
+- Network Communication
+- Performance Evaluation
+- Wireshark Packet Analysis
+
+---
+
+# Author
+
+**Aman**
+
+Advanced Computer Networks Lab Assignment
